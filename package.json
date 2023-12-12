@@ -20,15 +20,14 @@
     "jsonwebtoken": "^9.0.0",
     "md5": "^2.3.0",
     "mysql2": "^3.2.0",
-    "mysqldate": "^0.1.6",
     "typescript": "^5.0.4"
   },
   "devDependencies": {
-    "@types/cors": "^2.8.13",
     "@types/express": "^4.17.17",
+    "@types/node": "^18.15.11",
+    "@types/cors": "^2.8.13",
     "@types/express-session": "^1.17.7",
     "@types/jsonwebtoken": "^9.0.1",
-    "@types/md5": "^2.3.2",
-    "@types/node": "^18.15.11"
+    "@types/md5": "^2.3.2"
   }
 }

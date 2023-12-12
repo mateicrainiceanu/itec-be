@@ -5,10 +5,9 @@ import { Request, Response, NextFunction } from "express";
 import { AuthUserRequest } from "../config/interfaces";
 
 import * as dotenv from 'dotenv';
-import { User } from "../models/user";
 dotenv.config()
 
-function verifyToken(req: Request, res: Response, next: NextFunction){
+const verifyToken = (req: Request, res: Response, next: NextFunction) => {
     
     const token = req.body.token || req.query.token;
 
@@ -18,7 +17,7 @@ function verifyToken(req: Request, res: Response, next: NextFunction){
     
     const decoded = jwt.verify(token, process.env.TOKEN_KEY as string) as object
 
-    (req as AuthUserRequest).user = decoded as User;
+    (req as AuthUserRequest).user = decoded as object;
 
     return next();
 }
