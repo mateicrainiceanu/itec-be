@@ -17,14 +17,12 @@ app.get("/", (req, res) => {
 async function runCheck() {
     console.log("running");
     const [results] = (await Endpoint.getEndpoints()) as Array<RowDataPacket>
-    // console.log(results);
     results.map(async (endpoint: Endpoint) => {
         var status = 404;
         await axios.get(endpoint.url).then(response => {
-            console.log(response.status);
             status = response.status
 
-        }).catch(error => {})
+        }).catch(error => { })
 
 
         const newCk = new Check(endpoint.id, status)

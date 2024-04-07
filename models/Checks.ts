@@ -16,7 +16,7 @@ class Check {
         this.status = (code === 200 || code === 300 ? 0 : 1)
     }
 
-    async save(){
+    async save() {
         let sql = `INSERT INTO checks (endpointId, status, code) VALUES (
             ${this.endpointId}, 
             ${this.status},
@@ -26,23 +26,33 @@ class Check {
         return (db.execute(sql));
     }
 
-    async process(endpointstat: number){
-        if ((this.status !== 0 || endpointstat !== 0)){
-            let sql = `SELECT * FROM checks WHERE endpointId = ${this.endpointId} ORDER BY date DESC LIMIT 0, 10;`
-            const [response] = (await db.execute(sql)) as Array<RowDataPacket>
-            var prevRespProblem = 0
-            response.map((resp: Check) => {
-                if (resp.status === 1){
-                    prevRespProblem = 1;
-                }
-            })
-            if (!prevRespProblem) {
-                Endpoint.changeStatus(this.endpointId, 0)
-            } else if (prevRespProblem && endpointstat === 0) {
-                Endpoint.changeStatus(this.endpointId, 1)
+    async process(endpointstat: number) {
+
+        let sql = `SELECT * FROM checks WHERE endpointId = ${this.endpointId} ORDER BY date DESC LIMIT 0, 10;`
+        const [response] = (await db.execute(sql)) as Array<RowDataPacket>
+        var allOk = (this.status === 0)
+        var prevRespProblem = false
+        var allResponsesDown = true
+        response.map((resp: Check) => {
+            if (resp.status === 1) {
+                prevRespProblem = true;
+                allOk = false;
             }
+            if (resp.status === 0) {
+                allResponsesDown = false;
+            }
+        })
+        if (allOk) {
+            Endpoint.changeStatus(this.endpointId, 0)
+        } else if (allResponsesDown) {
+            Endpoint.changeStatus(this.endpointId, 2)
+        } else {
+            Endpoint.changeStatus(this.endpointId, 1)
         }
-    } 
+
+        Endpoint.checkEndpoints(this.endpointId)
+
+    }
 }
 
 export default Check; 
